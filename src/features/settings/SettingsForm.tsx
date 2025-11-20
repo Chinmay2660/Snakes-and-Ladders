@@ -1,7 +1,6 @@
 import { FormEvent, useMemo, useState } from 'react'
 
 import { Button } from '../../components/Button'
-import { JellySlider } from '../../components/JellySlider'
 import { useAppDispatch, useAppSelector } from '../../hooks/useRedux'
 import { setPlayers } from '../game/gameSlice'
 import {
@@ -37,15 +36,23 @@ export const SettingsForm = () => {
     >
       <section>
         <div className="flex flex-col gap-4">
-          <h2 className="text-base font-semibold text-slate-900 sm:text-lg">Players</h2>
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-slate-700">Player Count</label>
-            <JellySlider
-              value={settings.playerConfigs.length}
-              min={1}
-              max={5}
-              onChange={(value) => dispatch(setPlayerCount(value))}
-            />
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-semibold text-slate-900 sm:text-lg">Players</h2>
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-slate-700">Player Count</label>
+              <select
+                className="w-auto rounded border border-slate-300 pl-3 pr-10 py-2 text-black"
+                style={{ width: 'fit-content', minWidth: '80px' }}
+                value={settings.playerConfigs.length}
+                onChange={(event) => dispatch(setPlayerCount(Number(event.target.value)))}
+              >
+                {[1, 2, 3, 4, 5].map((count) => (
+                  <option key={count} value={count} className="text-black">
+                    {count}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
         <div className="mt-4 grid gap-3 sm:gap-4 md:grid-cols-2">
@@ -136,7 +143,7 @@ export const SettingsForm = () => {
         <label className="flex flex-col rounded-xl border border-slate-200 p-4">
           <span className="text-sm font-semibold text-black">Starting player</span>
           <select
-            className="mt-2 rounded border border-slate-300 px-3 py-2 text-black"
+            className="mt-2 rounded border border-slate-300 px-3 py-2 pr-8 text-black"
             value={settings.startingPlayer}
             onChange={(event) => dispatch(setStartingPlayer(Number(event.target.value)))}
           >

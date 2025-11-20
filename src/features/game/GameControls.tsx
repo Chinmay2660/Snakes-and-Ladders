@@ -85,20 +85,21 @@ export const GameControls = () => {
   const diceRolling = status === 'rolling' || status === 'animating' || isAnimating
 
   return (
-    <div className="w-full rounded-xl border border-slate-200 bg-white/90 p-3 shadow-lg backdrop-blur sm:rounded-2xl sm:p-4">
-      <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+    <div className="flex h-full w-full flex-col rounded-xl border border-slate-200 bg-white/90 p-2.5 shadow-lg backdrop-blur sm:rounded-2xl sm:p-3 lg:h-full">
+      <div className="flex flex-col items-center justify-between gap-3 sm:flex-row lg:flex-shrink-0">
         <div className="text-center sm:text-left">
           <p className="text-xs uppercase tracking-wide text-slate-500">Current player</p>
-          <p className="text-base font-semibold text-slate-900 sm:text-lg">
+          <p className="text-sm font-semibold text-slate-900 sm:text-base">
             {currentPlayer?.name ?? '—'}
           </p>
         </div>
         <Dice value={diceValue} rolling={diceRolling} disabled={!canRoll} onRoll={roll} />
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-2 sm:mt-6 sm:grid-cols-3 sm:gap-3">
+      <div className="mt-3 flex flex-1 flex-col justify-center gap-2 sm:mt-4 sm:gap-2 lg:justify-start">
         <Button
           variant="secondary"
+          className="w-full py-2 text-sm"
           onClick={() =>
             dispatch(
               resetGame({
@@ -110,37 +111,43 @@ export const GameControls = () => {
         >
           Reset game
         </Button>
-        <Button variant="primary" onClick={() => dispatch(saveGame())}>
+        <Button variant="primary" className="w-full py-2 text-sm" onClick={() => dispatch(saveGame())}>
           Save game
         </Button>
-        <Button variant="secondary" onClick={() => dispatch(loadGame())}>
+        <Button variant="secondary" className="w-full py-2 text-sm" onClick={() => dispatch(loadGame())}>
           Load saved game
         </Button>
-        <Button variant="ghost" onClick={exportState}>
+        <Button variant="ghost" className="w-full py-2 text-sm" onClick={exportState}>
           Export JSON
         </Button>
-        <Button variant="ghost" onClick={() => fileInputRef.current?.click()}>
+        <Button
+          variant="ghost"
+          className="w-full py-2 text-sm"
+          onClick={() => fileInputRef.current?.click()}
+        >
           Import JSON
         </Button>
       </div>
-      <label className="mt-4 flex items-center gap-2 text-sm text-slate-600">
-        <input
-          type="checkbox"
-          checked={autoSave}
-          onChange={(event) => setAutoSave(event.target.checked)}
-        />
-        Auto-save after each move
-      </label>
-      {gameSnapshot.lastSavedAt && (
-        <p className="mt-2 text-xs text-slate-500">
-          Last saved {new Date(gameSnapshot.lastSavedAt).toLocaleString()}
-        </p>
-      )}
-      {error && (
-        <p className="mt-3 text-sm text-red-600" role="alert">
-          {error}
-        </p>
-      )}
+      <div className="mt-auto flex-shrink-0 space-y-1.5">
+        <label className="flex items-center gap-2 text-xs text-slate-600">
+          <input
+            type="checkbox"
+            checked={autoSave}
+            onChange={(event) => setAutoSave(event.target.checked)}
+          />
+          Auto-save after each move
+        </label>
+        {gameSnapshot.lastSavedAt && (
+          <p className="text-xs text-slate-500">
+            Last saved {new Date(gameSnapshot.lastSavedAt).toLocaleString()}
+          </p>
+        )}
+        {error && (
+          <p className="text-xs text-red-600" role="alert">
+            {error}
+          </p>
+        )}
+      </div>
       <input
         ref={fileInputRef}
         type="file"
