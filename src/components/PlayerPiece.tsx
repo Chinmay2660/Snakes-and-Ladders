@@ -21,7 +21,7 @@ export const PlayerPiece = memo(
         role="img"
         aria-label={label}
         className={clsx(
-          'absolute flex h-5 w-5 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white text-[10px] font-bold text-white shadow-lg sm:h-7 sm:w-7 sm:text-xs',
+          'absolute z-30 flex h-5 w-5 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white text-[10px] font-bold text-white shadow-lg sm:h-7 sm:w-7 sm:text-xs',
           animate && 'transition-all duration-300',
           isActive && 'ring-2 ring-white ring-offset-1 ring-offset-black sm:ring-offset-2',
         )}

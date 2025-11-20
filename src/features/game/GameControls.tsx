@@ -1,12 +1,11 @@
-import { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { useEffect } from 'react'
 
 import { Button } from '../../components/Button'
 import { Dice } from '../../components/Dice'
 import { useDice } from '../../hooks/useDice'
 import { useAppDispatch, useAppSelector } from '../../hooks/useRedux'
 import { useLocalStorage } from '../../hooks/useLocalStorage'
-import { safeParseJson } from '../../utils/validation'
-import { importGameState, loadGame, resetGame, saveGame } from './gameSlice'
+import { loadGame, resetGame, saveGame } from './gameSlice'
 import { selectCurrentPlayer, selectDiceValue, selectGameStatus } from './gameSelectors'
 
 export const GameControls = () => {
@@ -17,48 +16,7 @@ export const GameControls = () => {
   const currentPlayer = useAppSelector(selectCurrentPlayer)
   const gameSnapshot = useAppSelector((state) => state.game)
   const settingsSnapshot = useAppSelector((state) => state.settings)
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const [error, setError] = useState<string>()
   const [autoSave, setAutoSave] = useLocalStorage('snl-auto-save', true)
-
-  const handleImport = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
-    const reader = new FileReader()
-    reader.onload = () => {
-      try {
-        const parsed = safeParseJson<Parameters<typeof importGameState>[0]['payload']>(
-          String(reader.result),
-        )
-        if (!parsed) {
-          throw new Error('Invalid JSON')
-        }
-        dispatch(importGameState(parsed))
-        setError(undefined)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unable to import game')
-      }
-    }
-    reader.readAsText(file)
-  }
-
-  const exportState = () => {
-    const payload = JSON.stringify(
-      {
-        game: gameSnapshot,
-        settings: settingsSnapshot,
-      },
-      null,
-      2,
-    )
-    const blob = new Blob([payload], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = 'snakes-and-ladders.json'
-    link.click()
-    URL.revokeObjectURL(url)
-  }
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -117,16 +75,6 @@ export const GameControls = () => {
         <Button variant="secondary" className="w-full py-2 text-sm" onClick={() => dispatch(loadGame())}>
           Load saved game
         </Button>
-        <Button variant="ghost" className="w-full py-2 text-sm" onClick={exportState}>
-          Export JSON
-        </Button>
-        <Button
-          variant="ghost"
-          className="w-full py-2 text-sm"
-          onClick={() => fileInputRef.current?.click()}
-        >
-          Import JSON
-        </Button>
       </div>
       <div className="mt-auto flex-shrink-0 space-y-1.5">
         <label className="flex items-center gap-2 text-xs text-slate-600">
@@ -142,20 +90,7 @@ export const GameControls = () => {
             Last saved {new Date(gameSnapshot.lastSavedAt).toLocaleString()}
           </p>
         )}
-        {error && (
-          <p className="text-xs text-red-600" role="alert">
-            {error}
-          </p>
-        )}
       </div>
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="application/json"
-        className="sr-only"
-        onChange={handleImport}
-        aria-label="Import game state"
-      />
     </div>
   )
 }
