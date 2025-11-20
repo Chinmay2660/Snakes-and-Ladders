@@ -9,7 +9,7 @@ export const selectPlayers = createSelector([selectGameState], (game) => game.pl
 
 export const selectCurrentPlayer = createSelector(
   [selectGameState],
-  (game) => game.players[game.currentPlayerIndex],
+  (game) => game.players[game.currentPlayerIndex] ?? undefined,
 )
 
 export const selectPositions = createSelector([selectGameState], (game) => game.positions)

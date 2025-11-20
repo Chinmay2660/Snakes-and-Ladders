@@ -53,7 +53,7 @@ export const GameBoard = memo(() => {
         <PlayerPiece
           key={player.id}
           player={player}
-          position={positions[player.id]}
+          position={positions[player.id] ?? 1}
           isActive={player.id === currentPlayer?.id}
           animate={animationsEnabled}
         />

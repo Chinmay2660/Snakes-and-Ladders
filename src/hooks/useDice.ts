@@ -24,8 +24,8 @@ export const useDice = () => {
 
     if (historyChanged && gameState.history.length > 0) {
       const lastMove = gameState.history[gameState.history.length - 1]
-      if (lastMove) {
-        const jumpTarget = jumps[lastMove.from]
+      if (lastMove && lastMove.from && lastMove.to) {
+        const jumpTarget = jumps?.[lastMove.from]
         if (jumpTarget && jumpTarget === lastMove.to) {
           const isLadder = lastMove.to > lastMove.from
           playSound(isLadder ? 'ladder' : 'snake')

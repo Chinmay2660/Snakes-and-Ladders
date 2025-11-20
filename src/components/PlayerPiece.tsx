@@ -31,7 +31,7 @@ export const PlayerPiece = memo(
           backgroundColor: player.color,
         }}
       >
-        {player.name.at(0)}
+        {player.name?.at(0) ?? '?'}
       </span>
     )
   },

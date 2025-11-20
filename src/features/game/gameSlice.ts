@@ -96,7 +96,8 @@ export const rollAndMove = createAsyncThunk<void, void, { state: RootState }>(
     const state = getState()
     const gameState = state.game
     const player = gameState.players[gameState.currentPlayerIndex]
-    const from = gameState.positions[player.id]
+    if (!player) return
+    const from = gameState.positions[player.id] ?? 1
     const attempted = from + dice
     let destination = attempted > BOARD_SIZE ? from : attempted
 
@@ -188,7 +189,7 @@ const gameSlice = createSlice({
       state.diceValue = action.payload
     },
     movePlayer(state, action: PayloadAction<{ playerId: string; to: number; dice: number }>) {
-      const from = state.positions[action.payload.playerId]
+      const from = state.positions[action.payload.playerId] ?? 1
       state.positions[action.payload.playerId] = action.payload.to
       state.status = 'animating'
       state.history.push(

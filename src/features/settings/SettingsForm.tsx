@@ -1,4 +1,5 @@
-import { FormEvent, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
+import type { FormEvent } from 'react'
 
 import { Button } from '../../components/Button'
 import { useAppDispatch, useAppSelector } from '../../hooks/useRedux'
@@ -113,9 +114,13 @@ export const SettingsForm = () => {
           onBlur={() => {
             try {
               const parsed = JSON.parse(textareaValue) as Record<number, number>
-              dispatch(setJumps(parsed))
-              setDraftOverride(null)
-              setJumpsError(undefined)
+              if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                dispatch(setJumps(parsed))
+                setDraftOverride(null)
+                setJumpsError(undefined)
+              } else {
+                setJumpsError('Invalid JSON mapping')
+              }
             } catch (parseError) {
               console.warn('Invalid JSON mapping', parseError)
               setJumpsError('Invalid JSON mapping')
@@ -126,9 +131,13 @@ export const SettingsForm = () => {
               event.preventDefault()
               try {
                 const parsed = JSON.parse(textareaValue) as Record<number, number>
-                dispatch(setJumps(parsed))
-                setDraftOverride(null)
-                setJumpsError(undefined)
+                if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                  dispatch(setJumps(parsed))
+                  setDraftOverride(null)
+                  setJumpsError(undefined)
+                } else {
+                  setJumpsError('Invalid JSON mapping')
+                }
               } catch (parseError) {
                 console.warn('Invalid JSON mapping', parseError)
                 setJumpsError('Invalid JSON mapping')
