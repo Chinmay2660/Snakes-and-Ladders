@@ -1,4 +1,5 @@
 import { ReactNode, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import clsx from 'clsx'
 
 interface ModalProps {
@@ -23,17 +24,28 @@ export const Modal = ({ title, children, isOpen, onClose, actions }: ModalProps)
 
   if (!isOpen) return null
 
-  return (
+  const modalContent = (
     <div
       role="dialog"
       aria-modal="true"
       aria-label={title}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 px-4"
+      className="fixed z-50 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm px-4"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        height: '100%',
+        margin: 0,
+        padding: '1rem',
+      }}
       onClick={onClose}
     >
       <div
         className={clsx(
-          'w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl transition-all',
+          'relative z-[60] w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl transition-all',
           'focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500',
         )}
         onClick={(event) => event.stopPropagation()}
@@ -46,4 +58,6 @@ export const Modal = ({ title, children, isOpen, onClose, actions }: ModalProps)
       </div>
     </div>
   )
+
+  return createPortal(modalContent, document.body)
 }
