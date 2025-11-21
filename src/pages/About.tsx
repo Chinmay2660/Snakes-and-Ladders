@@ -1,4 +1,4 @@
-export const About = () => (
+const About = () => (
   <section className="space-y-4 text-white sm:space-y-6">
     <header className="text-center sm:text-left">
       <h1 className="text-2xl font-bold text-white sm:text-3xl">About</h1>
@@ -20,3 +20,5 @@ export const About = () => (
     </article>
   </section>
 )
+
+export default About

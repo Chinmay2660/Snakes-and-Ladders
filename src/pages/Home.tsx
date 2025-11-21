@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 
-export const Home = () => (
+const Home = () => (
   <section className="space-y-4 text-white sm:space-y-6">
     <header className="text-center sm:text-left">
       <h1 className="text-3xl font-bold text-white sm:text-4xl">Snakes &amp; Ladders</h1>
@@ -40,3 +40,5 @@ export const Home = () => (
     </ul>
   </section>
 )
+
+export default Home

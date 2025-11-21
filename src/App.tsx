@@ -1,10 +1,22 @@
+import { Suspense, lazy } from 'react'
 import { NavLink, Route, Routes } from 'react-router-dom'
 
 import { ErrorBoundary } from './components/ErrorBoundary'
-import { About } from './pages/About'
-import { Home } from './pages/Home'
-import { Play } from './pages/Play'
-import { Settings } from './pages/Settings'
+import { Skeleton } from './components/Skeleton'
+
+// Lazy load routes for code splitting
+// Preload Home page as it's likely the first page visited
+const Home = lazy(() =>
+  import('./pages/Home').then((module) => {
+    // Prefetch other routes in the background
+    import('./pages/Play').catch(() => {})
+    import('./pages/Settings').catch(() => {})
+    return module
+  }),
+)
+const Play = lazy(() => import('./pages/Play'))
+const Settings = lazy(() => import('./pages/Settings'))
+const About = lazy(() => import('./pages/About'))
 
 const navLinkClass =
   'rounded-full px-4 py-2 text-sm font-semibold transition hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'
@@ -53,12 +65,21 @@ function App() {
           </div>
         </header>
         <main id="main" className="mx-auto max-w-6xl px-4 py-6 text-white sm:px-6 sm:py-10">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/play" element={<Play />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/about" element={<About />} />
-          </Routes>
+          <Suspense
+            fallback={
+              <div className="space-y-8">
+                <Skeleton variant="text" width="200px" height="36px" />
+                <Skeleton variant="rectangular" width="100%" height="400px" className="rounded-2xl" />
+              </div>
+            }
+          >
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/play" element={<Play />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/about" element={<About />} />
+            </Routes>
+          </Suspense>
         </main>
       </div>
     </ErrorBoundary>

@@ -149,10 +149,22 @@ export const saveGame = createAsyncThunk<void, void, { state: RootState }>(
   },
 )
 
+// Optimize loadGame for faster initial render
 export const loadGame = createAsyncThunk('game/loadGame', async (_, { dispatch }) => {
+  // Load immediately but don't block rendering
   const snapshot = loadPersistedState()
   if (snapshot) {
-    dispatch(hydrateGame(snapshot))
+    // Use requestIdleCallback if available to avoid blocking
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(() => {
+        dispatch(hydrateGame(snapshot))
+      }, { timeout: 100 })
+    } else {
+      // Fallback: use setTimeout to yield to browser
+      setTimeout(() => {
+        dispatch(hydrateGame(snapshot))
+      }, 0)
+    }
   }
 })
 

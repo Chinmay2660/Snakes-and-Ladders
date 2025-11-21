@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
 import { GameBoard } from '../features/game/GameBoard'
 import { GameControls } from '../features/game/GameControls'
@@ -7,17 +7,22 @@ import { loadGame } from '../features/game/gameSlice'
 import { useAppDispatch } from '../hooks/useRedux'
 import { Skeleton } from '../components/Skeleton'
 
-export const Play = () => {
+const Play = () => {
   const dispatch = useAppDispatch()
   const [isLoading, setIsLoading] = useState(true)
+  const hasLoadedRef = useRef(false)
 
   useEffect(() => {
-    const load = async () => {
-      setIsLoading(true)
-      await dispatch(loadGame())
+    if (hasLoadedRef.current) return
+    hasLoadedRef.current = true
+
+    // Load game state (non-blocking)
+    dispatch(loadGame())
+
+    // Show content immediately after a microtask
+    Promise.resolve().then(() => {
       setIsLoading(false)
-    }
-    load()
+    })
   }, [dispatch])
 
   if (isLoading) {
@@ -59,3 +64,5 @@ export const Play = () => {
     </section>
   )
 }
+
+export default Play

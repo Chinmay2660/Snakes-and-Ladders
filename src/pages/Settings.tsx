@@ -1,6 +1,6 @@
 import { SettingsForm } from '../features/settings/SettingsForm'
 
-export const Settings = () => (
+const Settings = () => (
   <section className="space-y-4 text-white sm:space-y-6">
     <header className="text-center sm:text-left">
       <h1 className="text-2xl font-bold text-white sm:text-3xl">Settings</h1>
@@ -11,3 +11,5 @@ export const Settings = () => (
     <SettingsForm />
   </section>
 )
+
+export default Settings
