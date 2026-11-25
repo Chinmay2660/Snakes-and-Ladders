@@ -5,11 +5,7 @@ import { Provider } from 'react-redux'
 
 import App from './App'
 import { store } from './app/store'
-
-// Defer CSS loading to improve FCP
-import('./styles/index.css').catch(() => {
-  // CSS import failed, continue anyway
-})
+import './styles/index.css'
 
 // Use startTransition for non-urgent updates
 const root = createRoot(document.getElementById('root')!)
