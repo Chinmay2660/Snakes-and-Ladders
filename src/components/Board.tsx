@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 import { BOARD_COLUMNS, BOARD_ROWS, formatSquareLabel } from '../utils/boardHelpers'
 
@@ -35,7 +35,7 @@ export const Board = ({
   children,
 }: BoardProps) => (
   <section
-    className="relative aspect-square w-full max-w-xl rounded-xl border-2 border-slate-900 bg-slate-900 shadow-2xl sm:rounded-2xl sm:border-4"
+    className="relative mx-auto aspect-square w-[min(100%,calc(100dvh_-_15rem))] min-w-[16rem] lg:w-[min(100%,calc(100dvh_-_6.5rem))] rounded-xl border-2 border-slate-900 bg-slate-900 shadow-2xl sm:rounded-2xl sm:border-4"
     aria-label={ariaLabel}
   >
     <div className="absolute inset-0 grid grid-cols-10 grid-rows-10 overflow-hidden rounded-xl sm:rounded-2xl">

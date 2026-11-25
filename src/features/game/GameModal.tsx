@@ -2,7 +2,7 @@ import { Button } from '../../components/Button'
 import { Confetti } from '../../components/Confetti'
 import { Modal } from '../../components/Modal'
 import { useAppDispatch, useAppSelector } from '../../hooks/useRedux'
-import { resetGame } from './gameSlice'
+import { newGame } from './gameSlice'
 import { selectGameState, selectWinner } from './gameSelectors'
 
 export const GameModal = () => {
@@ -14,7 +14,7 @@ export const GameModal = () => {
 
   const resetToSettings = () =>
     dispatch(
-      resetGame({
+      newGame({
         players: settings.playerConfigs,
         startingIndex: settings.startingPlayer,
       }),

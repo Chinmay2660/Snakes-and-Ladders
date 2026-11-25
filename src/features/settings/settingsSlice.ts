@@ -20,7 +20,7 @@ const DEFAULT_STATE: SettingsState = {
   jumps: DEFAULT_JUMPS,
 }
 
-const clampPlayerCount = (count: number) => Math.min(5, Math.max(1, count))
+const clampPlayerCount = (count: number) => Math.min(5, Math.max(2, count))
 
 const settingsSlice = createSlice({
   name: 'settings',
@@ -41,7 +41,7 @@ const settingsSlice = createSlice({
     setPlayerName(state, action: PayloadAction<{ id: string; name: string }>) {
       const player = state.playerConfigs.find((config) => config.id === action.payload.id)
       if (player) {
-        player.name = action.payload.name || player.name
+        player.name = action.payload.name
       }
     },
     setPlayerColor(state, action: PayloadAction<{ id: string; color: string }>) {

@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from 'react'
+import { type ReactNode, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import clsx from 'clsx'
 
@@ -45,7 +45,7 @@ export const Modal = ({ title, children, isOpen, onClose, actions }: ModalProps)
     >
       <div
         className={clsx(
-          'relative z-[60] w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl transition-all',
+          'themed-card relative z-[60] w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl transition-all',
           'focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500',
         )}
         onClick={(event) => event.stopPropagation()}

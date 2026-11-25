@@ -87,6 +87,7 @@ const getNextPlayerIndex = (state: GameState) =>
 export const rollAndMove = createAsyncThunk<void, void, { state: RootState }>(
   'game/rollAndMove',
   async (_, { getState, dispatch }) => {
+    if (getState().game.status !== 'idle') return
     const dice = rollDice()
     dispatch(setStatus('rolling'))
     dispatch(setDiceValue(dice))
@@ -95,6 +96,8 @@ export const rollAndMove = createAsyncThunk<void, void, { state: RootState }>(
 
     const state = getState()
     const gameState = state.game
+    // Game was reset/loaded while rolling; abandon this move.
+    if (gameState.status !== 'rolling') return
     const player = gameState.players[gameState.currentPlayerIndex]
     if (!player) return
     const from = gameState.positions[player.id] ?? 1
@@ -118,6 +121,7 @@ export const rollAndMove = createAsyncThunk<void, void, { state: RootState }>(
 
     if (jumpTarget) {
       await new Promise((resolve) => setTimeout(resolve, 350))
+      if (getState().game.status !== 'animating') return
       const isLadder = jumpTarget > destination
       dispatch(
         applyJump({
@@ -156,9 +160,12 @@ export const loadGame = createAsyncThunk('game/loadGame', async (_, { dispatch }
   if (snapshot) {
     // Use requestIdleCallback if available to avoid blocking
     if ('requestIdleCallback' in window) {
-      requestIdleCallback(() => {
-        dispatch(hydrateGame(snapshot))
-      }, { timeout: 100 })
+      requestIdleCallback(
+        () => {
+          dispatch(hydrateGame(snapshot))
+        },
+        { timeout: 100 },
+      )
     } else {
       // Fallback: use setTimeout to yield to browser
       setTimeout(() => {
@@ -178,7 +185,8 @@ const gameSlice = createSlice({
       state.currentPlayerIndex = action.payload.currentPlayerIndex
       state.history = action.payload.history
       state.diceValue = action.payload.diceValue
-      state.status = action.payload.status
+      // Transient states can't be resumed; fall back to idle so the game isn't stuck.
+      state.status = action.payload.status === 'complete' ? 'complete' : 'idle'
       state.winnerId = action.payload.winnerId
       state.lastSavedAt = action.payload.updatedAt
     },
@@ -262,7 +270,7 @@ const gameSlice = createSlice({
       state.currentPlayerIndex = action.payload.currentPlayerIndex
       state.diceValue = action.payload.diceValue
       state.history = action.payload.history
-      state.status = action.payload.status
+      state.status = action.payload.status === 'complete' ? 'complete' : 'idle'
       state.winnerId = action.payload.winnerId
       state.lastSavedAt = new Date().toISOString()
     },
@@ -284,3 +292,13 @@ export const {
 } = gameSlice.actions
 
 export default gameSlice.reducer
+
+/** Start a fresh game and persist it so a reload doesn't restore the previous one. */
+export const newGame = createAsyncThunk<
+  void,
+  { players: PlayerConfig[]; startingIndex?: number },
+  { state: RootState }
+>('game/newGame', async (payload, { dispatch }) => {
+  dispatch(resetGame(payload))
+  await dispatch(saveGame())
+})

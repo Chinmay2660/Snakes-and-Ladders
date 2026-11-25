@@ -15,7 +15,7 @@ body {
     BlinkMacSystemFont,
     'Segoe UI',
     sans-serif;
-  background: #0f172a;
+  background: #e0f2fe;
   /* Prevent layout shift */
   min-height: 100vh;
 }
@@ -30,3 +30,46 @@ body {
   clip: rect(0, 0, 0, 0);
   border: 0;
 }
+
+/* ---- Dark theme for white "card" surfaces ---- */
+.dark .themed-card {
+  background-color: rgb(30 41 59 / 0.92);
+  border-color: #334155;
+  color: #e2e8f0;
+}
+.dark .themed-card .text-slate-900,
+.dark .themed-card .text-slate-700,
+.dark .themed-card .text-slate-600,
+.dark .themed-card .text-black {
+  color: #e2e8f0;
+}
+.dark .themed-card .text-slate-500 {
+  color: #94a3b8;
+}
+.dark .themed-card .border-slate-100,
+.dark .themed-card .border-slate-200,
+.dark .themed-card .border-slate-300 {
+  border-color: #475569;
+}
+.dark .themed-card .bg-slate-50\/60,
+.dark .themed-card .bg-slate-50\/40 {
+  background-color: rgb(15 23 42 / 0.55);
+}
+.dark .themed-card .bg-slate-200,
+.dark .themed-card .bg-white {
+  background-color: #334155;
+  color: #f1f5f9;
+}
+.dark .themed-card .hover\:bg-slate-300:hover {
+  background-color: #475569;
+}
+.dark .themed-card input:not([type='checkbox']):not([type='color']),
+.dark .themed-card select {
+  background-color: #0f172a;
+  color: #f1f5f9;
+  border-color: #475569;
+}
+.dark {
+  color-scheme: dark;
+}
+html.dark body { background: #0f172a; }

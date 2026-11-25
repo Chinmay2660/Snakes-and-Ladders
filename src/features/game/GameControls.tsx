@@ -4,8 +4,7 @@ import { Button } from '../../components/Button'
 import { Dice } from '../../components/Dice'
 import { useDice } from '../../hooks/useDice'
 import { useAppDispatch, useAppSelector } from '../../hooks/useRedux'
-import { useLocalStorage } from '../../hooks/useLocalStorage'
-import { loadGame, resetGame, saveGame } from './gameSlice'
+import { newGame, saveGame } from './gameSlice'
 import { selectCurrentPlayer, selectDiceValue, selectGameStatus } from './gameSelectors'
 
 export const GameControls = () => {
@@ -14,16 +13,23 @@ export const GameControls = () => {
   const diceValue = useAppSelector(selectDiceValue)
   const status = useAppSelector(selectGameStatus)
   const currentPlayer = useAppSelector(selectCurrentPlayer)
-  const gameSnapshot = useAppSelector((state) => state.game)
-  const settingsSnapshot = useAppSelector((state) => state.settings)
-  const [autoSave, setAutoSave] = useLocalStorage('snl-auto-save', true)
+  const historyLength = useAppSelector((state) => state.game.history.length)
+  const lastSavedAt = useAppSelector((state) => state.game.lastSavedAt)
+  const playerConfigs = useAppSelector((state) => state.settings.playerConfigs)
+  const startingPlayer = useAppSelector((state) => state.settings.startingPlayer)
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!canRoll) return
+      if (!canRoll || event.defaultPrevented) return
       if (event.code === 'Space' || event.key === 'Enter') {
         const tagName = (event.target as HTMLElement | null)?.tagName
-        if (tagName === 'INPUT' || tagName === 'TEXTAREA' || tagName === 'SELECT') {
+        if (
+          tagName === 'INPUT' ||
+          tagName === 'TEXTAREA' ||
+          tagName === 'SELECT' ||
+          tagName === 'BUTTON' ||
+          tagName === 'A'
+        ) {
           return
         }
         event.preventDefault()
@@ -34,63 +40,43 @@ export const GameControls = () => {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [canRoll, roll])
 
+  // Auto-save after every move (and when the game finishes).
   useEffect(() => {
-    if (!autoSave) return
-    if (gameSnapshot.history.length === 0) return
+    if (historyLength === 0 || status === 'rolling') return
     dispatch(saveGame())
-  }, [autoSave, dispatch, gameSnapshot.history.length])
+  }, [dispatch, historyLength, status])
 
-  const diceRolling = status === 'rolling' || status === 'animating' || isAnimating
+  const busy = status === 'rolling' || status === 'animating' || isAnimating
 
   return (
-    <div className="flex h-full w-full flex-col rounded-xl border border-slate-200 bg-white/90 p-2.5 shadow-lg backdrop-blur sm:rounded-2xl sm:p-3 lg:h-full">
-      <div className="flex flex-col items-center justify-between gap-3 sm:flex-row lg:flex-shrink-0">
-        <div className="text-center sm:text-left">
+    <div className="themed-card flex w-full flex-col gap-3 rounded-xl border border-slate-200 bg-white/90 p-3 text-slate-900 shadow-lg backdrop-blur sm:rounded-2xl sm:p-4">
+      <div className="flex items-center justify-between gap-3 lg:flex-col lg:items-stretch">
+        <div>
           <p className="text-xs uppercase tracking-wide text-slate-500">Current player</p>
-          <p className="text-sm font-semibold text-slate-900 sm:text-base">
+          <p className="flex items-center gap-2 text-base font-semibold">
+            <span
+              className="inline-block h-3 w-3 rounded-full"
+              style={{ backgroundColor: currentPlayer?.color }}
+              aria-hidden="true"
+            />
             {currentPlayer?.name ?? '—'}
           </p>
         </div>
-        <Dice value={diceValue} rolling={diceRolling} disabled={!canRoll} onRoll={roll} />
+        <Dice value={diceValue} rolling={busy} disabled={!canRoll} onRoll={roll} />
       </div>
 
-      <div className="mt-3 flex flex-1 flex-col justify-center gap-2 sm:mt-4 sm:gap-2 lg:justify-start">
-        <Button
-          variant="secondary"
-          className="w-full py-2 text-sm"
-          onClick={() =>
-            dispatch(
-              resetGame({
-                players: settingsSnapshot.playerConfigs,
-                startingIndex: settingsSnapshot.startingPlayer,
-              }),
-            )
-          }
-        >
-          Reset game
-        </Button>
-        <Button variant="primary" className="w-full py-2 text-sm" onClick={() => dispatch(saveGame())}>
-          Save game
-        </Button>
-        <Button variant="secondary" className="w-full py-2 text-sm" onClick={() => dispatch(loadGame())}>
-          Load saved game
-        </Button>
-      </div>
-      <div className="mt-auto flex-shrink-0 space-y-1.5">
-        <label className="flex items-center gap-2 text-xs text-slate-600">
-          <input
-            type="checkbox"
-            checked={autoSave}
-            onChange={(event) => setAutoSave(event.target.checked)}
-          />
-          Auto-save after each move
-        </label>
-        {gameSnapshot.lastSavedAt && (
-          <p className="text-xs text-slate-500">
-            Last saved {new Date(gameSnapshot.lastSavedAt).toLocaleString()}
-          </p>
-        )}
-      </div>
+      <Button
+        variant="secondary"
+        className="w-full py-2 text-sm"
+        disabled={busy}
+        onClick={() => dispatch(newGame({ players: playerConfigs, startingIndex: startingPlayer }))}
+      >
+        New game
+      </Button>
+      <p className="text-xs text-slate-500">
+        Press Space or Enter to roll.
+        {lastSavedAt && ` Auto-saved ${new Date(lastSavedAt).toLocaleTimeString()}.`}
+      </p>
     </div>
   )
 }
