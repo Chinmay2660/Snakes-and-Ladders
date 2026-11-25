@@ -19,15 +19,18 @@ export const Snackbar = ({
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
-    if (isOpen) {
-      setIsVisible(true)
-      const timer = setTimeout(() => {
-        setIsVisible(false)
-        setTimeout(onClose, 300) // Wait for fade-out animation
-      }, duration)
-      return () => clearTimeout(timer)
-    } else {
+    if (!isOpen) {
+      const hide = setTimeout(() => setIsVisible(false), 0)
+      return () => clearTimeout(hide)
+    }
+    const show = setTimeout(() => setIsVisible(true), 0)
+    const timer = setTimeout(() => {
       setIsVisible(false)
+      setTimeout(onClose, 300) // Wait for fade-out animation
+    }, duration)
+    return () => {
+      clearTimeout(show)
+      clearTimeout(timer)
     }
   }, [isOpen, duration, onClose])
 

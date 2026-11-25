@@ -24,42 +24,13 @@ export default defineConfig({
     },
   },
   build: {
-    // Enable code splitting and tree shaking
+    // No custom manualChunks/treeshake overrides: they broke React (setting Activity of undefined).
     rollupOptions: {
       output: {
-        // Manual chunk splitting for better caching and smaller initial bundle
-        manualChunks: (id) => {
-          // Split node_modules into smaller chunks
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom')) {
-              return 'react-vendor'
-            }
-            if (id.includes('react-router')) {
-              return 'router-vendor'
-            }
-            if (id.includes('redux') || id.includes('@reduxjs')) {
-              return 'redux-vendor'
-            }
-            // Other vendor libraries
-            return 'vendor'
-          }
-        },
         // Optimize chunk file names for better caching
         chunkFileNames: 'assets/js/[name]-[hash].js',
         entryFileNames: 'assets/js/[name]-[hash].js',
         assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
-      },
-      // Tree shaking configuration
-      treeshake: {
-        // Remove unused code more aggressively
-        moduleSideEffects: (id) => {
-          // Only CSS files and main entry have side effects
-          return id.endsWith('.css') || id.includes('main.tsx')
-        },
-        // Preserve class names for better debugging (optional)
-        propertyReadSideEffects: false,
-        // Try to remove unused code even if it might have side effects
-        tryCatchDeoptimization: false,
       },
     },
     // Tree shaking is enabled by default in Vite with esbuild
