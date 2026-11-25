@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="en">
-<script>try{var t=localStorage.getItem("snl-theme");if(t==="dark"||(!t&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark")}catch(e){}</script>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>try{var t=localStorage.getItem("snl-theme");if(t==="dark"||(!t&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark")}catch(e){}</script>
     <meta
       name="description"
       content="An accessible Snakes& Ladders game built with React, Redux Toolkit, TypeScript, and TailwindCSS."
@@ -27,15 +27,22 @@
       .bg-slate-900 {
         background-color: #0f172a;
       }
+      .splash { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: #0f172a; color: #fff; }
+      .splash-die { font-size: 56px; animation: splash-bounce 1s infinite; }
+      .splash-title { margin: 0; font-size: 24px; font-weight: 700; }
+      .splash-sub { margin: 0; font-size: 14px; opacity: 0.7; }
+      @keyframes splash-bounce { 0%,100% { transform: translateY(-20%); } 50% { transform: translateY(10%); } }
     </style>
     <!-- Preload critical resources -->
     <link rel="modulepreload" href="/src/main.tsx" />
   </head>
   <body class="bg-slate-900">
     <div id="root">
-      <!-- Initial loading state to prevent CLS -->
-      <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center;">
-        <div style="color: white; font-size: 18px;">Loading...</div>
+      <!-- Splash shown until React mounts -->
+      <div class="splash" role="status" aria-label="Loading">
+        <div class="splash-die">🎲</div>
+        <p class="splash-title">Snakes &amp; Ladders</p>
+        <p class="splash-sub">Setting up the board…</p>
       </div>
     </div>
     <script type="module" src="/src/main.tsx"></script>
